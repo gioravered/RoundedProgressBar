@@ -44,6 +44,7 @@ internal class ProgressTextOverlay @JvmOverloads constructor(
     private val progressTextOverlayPaint: Paint
     private val backgroundTextOverlayPaint: Paint
     private val boundingRect = Rect() // Used for calculating measurements of progress text
+    private var backgroundTextColor = defaultBgTextColor
 
     init {
         // init text color paint
@@ -76,6 +77,10 @@ internal class ProgressTextOverlay @JvmOverloads constructor(
                 xPosition = (width * progressValue) - textContainerWidth - textSidePadding
                 canvas?.drawText(progressTextFormatter.getProgressText(progressValue), xPosition, yPosition, progressTextOverlayPaint)
             } else { // should use outside position
+                //This means that onDraw is called before the color was changed in the Paint instance
+                if (backgroundTextColor != backgroundTextOverlayPaint.color) {
+                    return
+                }
                 // Outside position = (Position to draw) + (Padding of text)
                 xPosition = (width * progressValue) + textSidePadding
                 canvas?.drawText(progressTextFormatter.getProgressText(progressValue), xPosition, yPosition, backgroundTextOverlayPaint)
@@ -165,6 +170,7 @@ internal class ProgressTextOverlay @JvmOverloads constructor(
      */
     fun setBackgroundTextColor(@ColorInt newColor: Int) {
         backgroundTextOverlayPaint.color = newColor
+        backgroundTextColor = newColor
         invalidate()
     }
 
